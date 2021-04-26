@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from django.urls import reverse_lazy
+
 from .env import *
 
 # GENERAL
@@ -30,8 +32,11 @@ INSTALLED_APPS = [
     "allauth.account",
     "crispy_forms",
     "debug_toolbar",
+    "rest_framework",
+    "rest_framework.authtoken",
+    "drf_spectacular",
     # Local
-    "accounts",
+    "accounts.apps.AccountsConfig",
     "pages",
     "mail_service",
 ]
@@ -173,3 +178,20 @@ ACCOUNT_UNIQUE_EMAIL = True
 
 # https://docs.djangoproject.com/en/stable/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
+# https://www.django-rest-framework.org/api-guide/settings/
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "EXCLUDE_PATH": [reverse_lazy("schema")],  # custom variable
+    "PREPROCESSING_HOOKS": ["schema.hooks.remove_apis_from_list"],
+    "SECURITY": ["drf_spectacular.authentication.TokenScheme"],
+}
